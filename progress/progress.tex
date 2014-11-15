@@ -64,17 +64,13 @@
 Traditional sematic parsers have limitations such as requiring supervision to annotate data and only being able to operate on limited domains with few predicates. Previous work in Combinatorial Categorial Grammar usually relies on manually specified rules [1] or rules induced from annotated logical forms [2]. In this project, we are trying to implement a semantic parser that can scale up to Freebase without annotated logical forms. 
 
 \section{Problem Description}
-Our goal is to train a sematic parser without annotated logical forms. We expect the output to be “Michelle Obama” if the input is “Who is Barrack Obama’s wife”. This would require that we have a table where we can query Barrack Obama and “spouse” and get the output as “Michelle Obama”, and this would also require us to know that “wife” is a “female” “spouse”. We should also expect the input to be invalid if it is “Who is Michelle Obama’s wife” because Michelle is matched to Obama and Michelle is female while Obama is male and also “wife” is a “female” “spouse”.
+Our goal is to train a sematic parser without annotated logical forms. We expect the output to be “Michelle Obama” if the input is “Who is Barrack Obama’s wife”. This would require that we have a table where we can query Barrack Obama and “spouse” and get the output as “Michelle Obama”, and this would also require us to know that “wife” is a “female” “spouse”. We should also expect the input to be invalid if it is “Who is Michelle Obama’s wife” because Michelle is matched to Obama and Michelle is female while Obama is male and also “wife” is a “female” “spouse”.\\
 
-We will first develop a method to automatically build upon an existing predicate knowledge base to create mappings for more compositional predicates. Next we will modify existing alignment algorithms to utilize these compositional predicates and evaluate the effects on predicate alignment.
+We will first develop a method to automatically build upon an existing predicate knowledge base to create mappings for more compositional predicates. Next we will modify existing alignment algorithms to utilize these compositional predicates and evaluate the effects on predicate alignment.\\
 
-We will use Freebase as the existing single predicate knowledge database. We will use WordNet as the lexical database to provide cognitive synonym sets and conceptual relations in order to generate compositional predicate mappings. We will evaluate the new compositional predicate knowledge database on the same question-answer set as used in [3]. 
+We will use Freebase as the existing single predicate knowledge database. We will use WordNet as the lexical database to provide cognitive synonym sets and conceptual relations in order to generate compositional predicate mappings. We will evaluate the new compositional predicate knowledge database on the same question-answer set as used in [3]. \\
 
 For finding the alignment, the input would be a list of text triples consisting of two arguments and a relation and a list of knowledge base triples with a similar structure. The output would be a mapping from these text relations to the logical composition of tables in the knowledge base.
-
-\section{Aligning Predicates from Question Answer Pairs}
-
-%\subsection{Sempre overview}
 
 
 \section{Data collection}
@@ -91,7 +87,7 @@ Let us now look at the algorithm by which we can align possible formulas or pred
 Given two sets of triples, the knowledge base triples and the text based triples we learn the alignment by creating templates and looking for similar template pattern matches in the data.\\
 
 \subsection{Exact Match - Baseline}
-Baseline for the problem we are trying to solve uses only exact match between the text relation and the freebase relation to determine the alignments between formula and lexeme. For example, given The method we use for testing the baseline and other models initially is using examples generated manually. 
+Baseline for the problem we are trying to solve uses only exact match between the text relation and the freebase relation to determine the alignments between formula and lexeme. For example, "fb:location.statistical\_region.population" aligns to  "population" since "population" is a part of the freebase relationship string. The method we use for testing the baseline and other models initially is using examples generated manually. 
 
 \subsection{Template Based Model}
 In our algorithm, we use templates to achieve improvement over the baseline. The triples can be interpreted as a graph with entities as vertices and relationships as edges. We define a "template" as a pattern of the formula which would be used to check for matches in the graph. We will have many formulas from the freebase data for a particular template. Based on the intersection between the entity pairs in both the freebase triples and the text triples we include the formula to the alignment. Each (formula, relationship) pair has a list of feature values like text frequency, KB frequency, intersection size which is gathered from the data. Let us look at algorithm to handle certain templates and examples.\\
@@ -114,8 +110,8 @@ fb:people.person.place\_of\_birth\\
 	Now we have entities X, Y and two edges which stand for two relationships in the database. Along with X and Y we see the inclusion of a new vertex Mediator. Mediator is a special Compound Value Type (CVT) node marked in the freebase data in a unique way. Mediators connect multiple entities together following a similar relationship. (Example, (i) the population of a country X in year 2010 was Y (ii) X was married to Y from t1 to t2) Similar to the previous template algorithm used, we match the pattern obtained using the data and include the alignment to our final output if the intersection is non empty. This would give us the ability to answer more queries. 
 	
 	\item {\bf Template 3} : $X\rightarrow Y$\\
-	 $\downarrow$\\
-	 $C$\\
+	 .\qquad\qquad\qquad$\downarrow$\\
+	 .\qquad\qquad\qquad$C$\\
 	X, Y are the main entities and C is like a constant with small domain (for example : gender = \{male, female\}) to which the entity X has a certain relationship with. For example, if we have a question which asks "Who is the wife of Michelle Obama?" using the first template we would get an erroneous reply "Barrack Obama". So to the lexeme "wife of" we also need to attach another relationship which refers to the gender of the entity. The new alignment would be\\
 	
 {\bf formula} = \\"(lambda x (fb:people.person.spouse \\(fb:people.person.gender.female(var x))))"\\
@@ -131,27 +127,33 @@ A few more templates which would be our targets for the end project are discusse
 This template has 3 entities and can be used for aligning grandfather relationships. In our freebase data we have parent relationship but we do not have grandparent relationship. So grandparent can be formulated using lambda calculus as (lambda x (fb:people.person.parent (fb:people.person.parent(var x))))
 
 \item {\bf Template 5} : $X\leftarrow Mediator \rightarrow Y$\\
-.\qquad\qquad$\downarrow$\\
-.\qquad\qquad$Z$\\
+.\qquad\qquad\qquad\qquad\quad$\downarrow$\\
+.\qquad\qquad\qquad\qquad\quad$Z$\\
 An example for this template would be the following: If we want to find President of a country, we do not have a direct table in freebase which provides such information. Although data regarding important government officials is provided.
 	
 \end{enumerate}
 
-We have seen each of the templates with algorithms and examples to handle the cases. We also mentioned about the features in each alignment entry, they have to be engineered separately in future to obtain good result with the testing. 
+We have seen each of the templates with algorithms and examples. The modeling of features in the alignment entries have to be engineered separately in future to obtain good result with the testing.
 
 \section{Experiments and Observations}
-For testing the baseline and oracle we created a set of test examples which would fall under the range of the various templates discussed above. Using these test examples and the alignment we can estimate the accuracy of alignment of a formula to a lexeme.
+We obtained the alignments for the baseline using direct string match approach. For testing the baseline and oracle we created a set of examples which would fall under the range of the various templates discussed above. Using these test examples and the alignment we can estimate the accuracy of alignment of a formula to a lexeme.
 
-For the baseline, which uses the exact match algorithm
-
-
-
+For the baseline, which uses the exact match algorithm very few of the examples would actually have an alignment with a formula. Out of around 20 example text relationships 3 matches were correctly obtained. The percentage of match is 15\% for the baseline. We hope to improve this value in future tests and also create a better testing algorithm using already available questions. Whereas the oracle was aligned manually using all templates we have described earlier we could obtain around 12 matches 60\% accuracy.
 
 \section{Future work}
+\begin{itemize}
+\item Implement algorithms for each template mentioned above and use the new alignments for testing the model.
+\item Come up with intuitive template which would allow us to expand our scope and parse more sentences effectively.
+\item Feature engineer the various values in the output alignment and get good scores.
+\item Testing on the set of available webquestions would give us a good uniform way to analyse the alignment rather than coming up with our own test examples manually.
+\end{itemize}
+
 
 \section{References}
-[1] J. Krishnamurthy and T. Mitchell. 2012. Weakly supervised training of semantic parsers. In Empirical Methods in Natural Language Processing and Computational Natural Language Learning (EMNLP/CoNLL), pages 754–765.
-[2] T. Kwiatkowski, L. Zettlemoyer, S. Goldwater, and M. Steedman. 2010. Inducing probabilistic CCG grammars from logical form with higher-order unification. In Empirical Methods in Natural Language Processing (EMNLP), pages 1223–1233.
-[3] J. Berant, A. Chou, R. Frostig, P. Liang, “Semantic Parsing on Freebase from QuestionAnswer Pairs”, ACL, 2013.
+[1] J. Krishnamurthy and T. Mitchell. 2012. Weakly supervised training of semantic parsers. In Empirical Methods in Natural Language Processing and Computational Natural Language Learning (EMNLP/CoNLL), pages 754–765.\\
+
+\noindent[2] T. Kwiatkowski, L. Zettlemoyer, S. Goldwater, and M. Steedman. 2010. Inducing probabilistic CCG grammars from logical form with higher-order unification. In Empirical Methods in Natural Language Processing (EMNLP), pages 1223–1233.\\
+
+\noindent[3] J. Berant, A. Chou, R. Frostig, P. Liang, “Semantic Parsing on Freebase from QuestionAnswer Pairs”, ACL, 2013.
 
 \end{document}
