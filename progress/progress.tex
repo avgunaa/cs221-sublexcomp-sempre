@@ -61,8 +61,16 @@
 \maketitle
 
 \section{Introduction}
+Traditional sematic parsers have limitations such as requiring supervision to annotate data and only being able to operate on limited domains with few predicates. Previous work in Combinatorial Categorial Grammar usually relies on manually specified rules [1] or rules induced from annotated logical forms [2]. In this project, we are trying to implement a semantic parser that can scale up to Freebase without annotated logical forms. 
 
 \section{Problem Description}
+Our goal is to train a sematic parser without annotated logical forms. We expect the output to be “Michelle Obama” if the input is “Who is Barrack Obama’s wife”. This would require that we have a table where we can query Barrack Obama and “spouse” and get the output as “Michelle Obama”, and this would also require us to know that “wife” is a “female” “spouse”. We should also expect the input to be invalid if it is “Who is Michelle Obama’s wife” because Michelle is matched to Obama and Michelle is female while Obama is male and also “wife” is a “female” “spouse”.
+
+We will first develop a method to automatically build upon an existing predicate knowledge base to create mappings for more compositional predicates. Next we will modify existing alignment algorithms to utilize these compositional predicates and evaluate the effects on predicate alignment.
+
+We will use Freebase as the existing single predicate knowledge database. We will use WordNet as the lexical database to provide cognitive synonym sets and conceptual relations in order to generate compositional predicate mappings. We will evaluate the new compositional predicate knowledge database on the same question-answer set as used in [3]. 
+
+For finding the alignment, the input would be a list of text triples consisting of two arguments and a relation and a list of knowledge base triples with a similar structure. The output would be a mapping from these text relations to the logical composition of tables in the knowledge base.
 
 \section{Aligning Predicates from Question Answer Pairs}
 
@@ -137,5 +145,8 @@ For testing the baseline and oracle we creating
 \section{Future work}
 
 \section{References}
+[1] J. Krishnamurthy and T. Mitchell. 2012. Weakly supervised training of semantic parsers. In Empirical Methods in Natural Language Processing and Computational Natural Language Learning (EMNLP/CoNLL), pages 754–765.
+[2] T. Kwiatkowski, L. Zettlemoyer, S. Goldwater, and M. Steedman. 2010. Inducing probabilistic CCG grammars from logical form with higher-order unification. In Empirical Methods in Natural Language Processing (EMNLP), pages 1223–1233.
+[3] J. Berant, A. Chou, R. Frostig, P. Liang, “Semantic Parsing on Freebase from QuestionAnswer Pairs”, ACL, 2013.
 
 \end{document}
