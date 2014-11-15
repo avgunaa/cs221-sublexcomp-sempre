@@ -72,7 +72,7 @@
 \section{Data collection}
 The data used in the project is obtained from two sources, one portion comes from freebase and the other is in the form of text triples.\\
 
-{\bf Freebase Data : }Freebase essentially contains a massive amount of data on various topics, we have gathered a subset of 14,873,062 data entries from coherent topics and categories like People, Business, Government and Organization. Each entry in this set is in the form of triples ($arg1\rightarrow reln \rightarrow arg2$). For example, $fb:en.viswanathan\_anand \rightarrow	fb:people.person.profession \rightarrow	fb:en.chess\_master$. \\
+{\bf Freebase Data : }Freebase essentially contains a massive amount of data on various topics, we have gathered a subset of 14,873,062 data entries from coherent topics and categories like People, Business, Government and Organization. The reason for choosing this particular set of topics is to obtain closely related data which would have lot of entities overlapping. Each entry in this set is in the form of triples ($arg1\rightarrow reln \rightarrow arg2$). For example, $fb:en.viswanathan\_anand \rightarrow	fb:people.person.profession \rightarrow	fb:en.chess\_master$. \\
 
 {\bf Text Data : }The text data consists of triples with text instead of freebase predicates. It is a subset of the data used in the original paper and it is again of the form ($arg1\rightarrow reln \rightarrow arg2$). An example of this database would be $"Vishwanathan$ $Anand" \rightarrow "profession$ $of" \rightarrow "chess$ $master"$. We have 3,000,000 data entries for the text triples.\\
 
@@ -82,54 +82,59 @@ Let us now look at the algorithm by which we can align possible formulas or pred
 \section{Algorithm}
 Given two sets of triples, the knowledge base triples and the text based triples we learn the alignment by creating templates and looking for similar template pattern matches in the data.\\
 
-The triples can be interpreted as a graph with entities as vertices and relationships as edges. We define a "template" as a pattern of the formula which would be used to check for matches in the graph. We will have many formulas from the freebase data for a particular template. Based on the intersection between the entity pairs in both the freebase triples and the text triples we include the formula to the alignment. Each (formula, relationship) pair has a list of feature values like text frequency, KB frequency, intersection size which is gathered from the data. Let us look at some templates and their examples which we use to find patterns in the data.\\
+\subsection{Exact Match - Baseline}
+Baseline for the problem we are trying to solve uses only exact match between the text relation and the freebase relation to determine the alignments between formula and lexeme. For example, given The method we use for testing the baseline and other models initially is using examples generated manually. 
+
+\subsection{Template Based Model}
+In our algorithm, we use templates to achieve improvement over the baseline. The triples can be interpreted as a graph with entities as vertices and relationships as edges. We define a "template" as a pattern of the formula which would be used to check for matches in the graph. We will have many formulas from the freebase data for a particular template. Based on the intersection between the entity pairs in both the freebase triples and the text triples we include the formula to the alignment. Each (formula, relationship) pair has a list of feature values like text frequency, KB frequency, intersection size which is gathered from the data. Let us look at algorithm to handle certain templates and examples.\\
+
 
 The various templates under consideration are:
 \begin{enumerate}
-	\item Case 1 {\bf (Baseline)}:$X\rightarrow Y$\\
+	\item {\bf Template 1} : $X\rightarrow Y$\\
 	Here X and Y stand for two entities and the edge between them represents the relationship between the entities. We need to find matches in both the Freebase data and the Text data. This template represent a straight forward alignment with between two relationships based on the intersection. For example: freebase data $fb:en.barrack_obama \rightarrow	fb:people.person.place_of_birth \rightarrow	fb:en.honolulu$ and text triple $"Barrack$ $Obama" \rightarrow "born$ $in" \rightarrow "honolulu"$ will result in a successful match and would result in the following alignment entry:\\
 	
-formula = "fb:people.person.place\_of\_birth"\\
-lexeme:"born in"\\
-source = "ALIGNMENT"\\
-features = \{FB\_typed\_size :16184.0, Intersection\_size\_typed:3.0, "NL-size":5.0\}
+{\bf formula} =\\
+fb:people.person.place\_of\_birth\\
+{\bf lexeme} = "born in"\\
+{\bf source} = "ALIGNMENT"\\
+{\bf features} = \{FB\_typed\_size :16184.0, Intersection\_size\_typed:3.0, "NL-size":5.0\}
 
-Baseline for the problem we are trying to solve uses only this template to determine the alignments between formula and lexeme. The method we use for testing the baseline and other models initially is using examples generated manually. Other templates we will be using for improving the baseline model is given henceforth.
 
  
-	\item $X\rightarrow Mediator \rightarrow Y$\\
+	\item {\bf Template 2} : $X\rightarrow Mediator \rightarrow Y$\\
 	Now we have entities X, Y and two edges which stand for two relationships in the database. Along with X and Y we see the inclusion of a new vertex Mediator. Mediator is a special Compound Value Type (CVT) node marked in the freebase data in a unique way. Mediators connect multiple entities together following a similar relationship. (Example, (i) the population of a country X in year 2010 was Y (ii) X was married to Y from t1 to t2) Similar to the previous template algorithm used, we match the pattern obtained using the data and include the alignment to our final output if the intersection is non empty. This would give us the ability to answer more queries. 
 	
-	\item $X\rightarrow Y$\\
+	\item {\bf Template 3} : $X\rightarrow Y$\\
 	 $\downarrow$\\
 	 $C$\\
 	X, Y are the main entities and C is like a constant with small domain (for example : gender = \{male, female\}) to which the entity X has a certain relationship with. For example, if we have a question which asks "Who is the wife of Michelle Obama?" using the first template we would get an erroneous reply "Barrack Obama". So to the lexeme "wife of" we also need to attach another relationship which refers to the gender of the entity. The new alignment would be\\
 	
-formula = "(lambda x (fb:people.person.spouse (fb:people.person.gender.female(var x))))"\\
-lexeme:"wife of"\\
-source = "ALIGNMENT"\\
-features = \{FB\_typed\_size :aaa, Intersection\_size\_typed:bbb, "NL-size":ccc\}
+{\bf formula} = \\"(lambda x (fb:people.person.spouse \\(fb:people.person.gender.female(var x))))"\\
+{\bf lexeme} = "wife of"\\
+{\bf source} = "ALIGNMENT"\\
+{\bf features} = \{FB\_typed\_size :aaa, Intersection\_size\_typed:bbb, "NL-size":ccc\}
 
 The algorithm used to align the formula is still similar to the ones discussed above but we now use a unique lambda function which would represent the formula. This is yet to be implemented and tested.
 
 A few more templates which would be our targets for the end project are discussed with an example.
 
-\item $X \rightarrow Y \rightarrow Z$
+\item {\bf Template 4} : $X \rightarrow Y \rightarrow Z$
 This template has 3 entities and can be used for aligning grandfather relationships. In our freebase data we have parent relationship but we do not have grandparent relationship. So grandparent can be formulated using lambda calculus as (lambda x (fb:people.person.parent (fb:people.person.parent(var x))))
 
-\item $X\leftarrow Mediator \rightarrow Y$\\
+\item {\bf Template 5} : $X\leftarrow Mediator \rightarrow Y$\\
 .\qquad\qquad$\downarrow$\\
 .\qquad\qquad$Z$\\
-An example for this template would be the following: Consider the 
+An example for this template would be the following: If we want to find President of a country, we do not have a direct table in freebase which provides such information. Although data regarding important government officials is provided.
 	
 \end{enumerate}
 
 We have seen each of the templates with algorithms and examples to handle the cases. We also mentioned about the features in each alignment entry, they have to be engineered separately in future to obtain good result with the testing. 
 
 \section{Experiments and Observations}
-For testing the baseline and oracle we creating
+For testing the baseline and oracle we created a set of test examples which would fall under the range of the various templates discussed above. Using these test examples and the alignment we can estimate the accuracy of alignment of a formula to a lexeme.
 
-\section{Algorithm}
+For the baseline, which uses the exact match algorithm
 
 
 
