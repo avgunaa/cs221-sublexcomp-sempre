@@ -86,7 +86,7 @@ The triples can be interpreted as a graph with entities as vertices and relation
 
 The various templates under consideration are:
 \begin{enumerate}
-	\item Case 1:$X\rightarrow Y$\\
+	\item Case 1 {\bf (Baseline)}:$X\rightarrow Y$\\
 	Here X and Y stand for two entities and the edge between them represents the relationship between the entities. We need to find matches in both the Freebase data and the Text data. This template represent a straight forward alignment with between two relationships based on the intersection. For example: freebase data $fb:en.barrack_obama \rightarrow	fb:people.person.place_of_birth \rightarrow	fb:en.honolulu$ and text triple $"Barrack$ $Obama" \rightarrow "born$ $in" \rightarrow "honolulu"$ will result in a successful match and would result in the following alignment entry:\\
 	
 formula = "fb:people.person.place\_of\_birth"\\
@@ -94,32 +94,48 @@ lexeme:"born in"\\
 source = "ALIGNMENT"\\
 features = \{FB\_typed\_size :16184.0, Intersection\_size\_typed:3.0, "NL-size":5.0\}
 
-{\bf Baseline} for the problem we are trying to solve uses only this template to determine the alignments between formula and lexeme. The method we use for testing the baseline and other models initially is using examples generated manually. Other templates we will be using for improving the baseline model is given henceforth.
+Baseline for the problem we are trying to solve uses only this template to determine the alignments between formula and lexeme. The method we use for testing the baseline and other models initially is using examples generated manually. Other templates we will be using for improving the baseline model is given henceforth.
 
  
 	\item $X\rightarrow Mediator \rightarrow Y$\\
 	Now we have entities X, Y and two edges which stand for two relationships in the database. Along with X and Y we see the inclusion of a new vertex Mediator. Mediator is a special Compound Value Type (CVT) node marked in the freebase data in a unique way. Mediators connect multiple entities together following a similar relationship. (Example, (i) the population of a country X in year 2010 was Y (ii) X was married to Y from t1 to t2) Similar to the previous template algorithm used, we match the pattern obtained using the data and include the alignment to our final output if the intersection is non empty. This would give us the ability to answer more queries. 
 	
-	\item $Y\leftarrow X \rightarrow C$
-	X, Y are the main entities and C is something like a constant with small domain to which the entity X has a certain relationship. For example, if we have a question which 
+	\item $X\rightarrow Y$\\
+	 $\downarrow$\\
+	 $C$\\
+	X, Y are the main entities and C is like a constant with small domain (for example : gender = \{male, female\}) to which the entity X has a certain relationship with. For example, if we have a question which asks "Who is the wife of Michelle Obama?" using the first template we would get an erroneous reply "Barrack Obama". So to the lexeme "wife of" we also need to attach another relationship which refers to the gender of the entity. The new alignment would be\\
+	
+formula = "(lambda x (fb:people.person.spouse (fb:people.person.gender.female(var x))))"\\
+lexeme:"wife of"\\
+source = "ALIGNMENT"\\
+features = \{FB\_typed\_size :aaa, Intersection\_size\_typed:bbb, "NL-size":ccc\}
+
+The algorithm used to align the formula is still similar to the ones discussed above but we now use a unique lambda function which would represent the formula. This is yet to be implemented and tested.
+
+A few more templates which would be our targets for the end project are discussed with an example.
+
+\item $X \rightarrow Y \rightarrow Z$
+This template has 3 entities and can be used for aligning grandfather relationships. In our freebase data we have parent relationship but we do not have grandparent relationship. So grandparent can be formulated using lambda calculus as (lambda x (fb:people.person.parent (fb:people.person.parent(var x))))
+
+\item $X\leftarrow Mediator \rightarrow Y$\\
+.\qquad\qquad$\downarrow$\\
+.\qquad\qquad$Z$\\
+An example for this template would be the following: Consider the 
 	
 \end{enumerate}
 
+We have seen each of the templates with algorithms and examples to handle the cases. We also mentioned about the features in each alignment entry, they have to be engineered separately in future to obtain good result with the testing. 
 
-
-\section{Examples}
-
-\section{Baseline}
-The algorithm we use
-
-\section{Oracle}
+\section{Experiments and Observations}
+For testing the baseline and oracle we creating
 
 \section{Algorithm}
 
 
-\section{Testing}
+
 
 \section{Future work}
 
 \section{References}
+
 \end{document}
