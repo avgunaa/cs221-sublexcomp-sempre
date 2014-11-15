@@ -1,4 +1,4 @@
-\documentclass[11pt, a4paper]{article}
+\documentclass[12pt, a4paper]{article}
 \usepackage{interspeech2012,amssymb,amsmath,graphicx,subcaption,caption,multicol}
 \usepackage{listings}
 \usepackage{color}
@@ -60,29 +60,44 @@
 \begin{document}
 \maketitle
 
-%
-%\begin{abstract}
-%This is the paper layout specification and template definition for the InterSpeech 2012 Conference, which will be held in Portland, Oregon, USA.
-%This template has been generated from previous InterSpeech templates and is sized in A4 (ISO 216, 210 mm $\times$ 297 mm).
-%The format is essentially the one used for the IEEE ICASSP conferences.
-%You must include index terms as shown below.
-%\end{abstract}
-%\noindent{\bf Index Terms}: speech synthesis, unit selection, join costs
 \section{Introduction}
 
 \section{Problem Description}
 
+\section{Aligning Predicates from Question Answer Pairs}
+
 %\subsection{Sempre overview}
 
-\section{Example}
+
+\section{Data collection}
+The data used in the project is basically obtained from two sources, one portion comes from the freebase data and the other is in the form of text triples. 
+
+Freebase essentially contains a massive amount of data on various topics, we have gathered a subset of 14,873,062 data entries from coherent topics and categories like People, Business, Government and Organization. Each entry in this set is in the form of triples ($arg1\rightarrow reln \rightarrow arg2$). For example, $fb:en.viswanathan\_anand \rightarrow	fb:people.person.profession \rightarrow	fb:en.chess\_master$. 
+
+The text data consists of triples with text instead of freebase predicates. It is a subset of the data used in the original paper and it is again of the form ($arg1\rightarrow reln \rightarrow arg2$). An example of this database would be $"Vishwanathan$ $Anand" \rightarrow "profession$ $of" \rightarrow "chess$ $master"$. We have around 3,000,000 data entries of this kind.
+
+For both the data sets, the arguments are referred to as entities and the relationship is referred to as the edge between two entities in later parts of the report.
+
+The basic goal of alignment using question answer pairs is to align "profession of" with fb:people.person.profession using certain techniques. For every such alignment we have a set of features like text frequency, KB frequency, intersection size, etc.
+
+Let us now look at the algorithm by which we can align possible formulas or predicates for different words.
+
+\section{Algorithm}
+Given two sets of triples, the knowledge base triples and the text based triples we learn the alignment by creating templates and looking for similar template pattern matches in the data.
+
+The triples can be interpreted as a graph with entities as vertices and relationships as edges. Let us look at some templates which 
+
+
+
+\section{Examples}
 
 \section{Baseline}
+The algorithm we use
 
 \section{Oracle}
 
 \section{Algorithm}
 
-\section{Data}
 
 \section{Testing}
 
