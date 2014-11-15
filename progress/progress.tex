@@ -70,22 +70,40 @@
 
 
 \section{Data collection}
-The data used in the project is basically obtained from two sources, one portion comes from the freebase data and the other is in the form of text triples. 
+The data used in the project is obtained from two sources, one portion comes from freebase and the other is in the form of text triples.\\
 
-Freebase essentially contains a massive amount of data on various topics, we have gathered a subset of 14,873,062 data entries from coherent topics and categories like People, Business, Government and Organization. Each entry in this set is in the form of triples ($arg1\rightarrow reln \rightarrow arg2$). For example, $fb:en.viswanathan\_anand \rightarrow	fb:people.person.profession \rightarrow	fb:en.chess\_master$. 
+{\bf Freebase Data : }Freebase essentially contains a massive amount of data on various topics, we have gathered a subset of 14,873,062 data entries from coherent topics and categories like People, Business, Government and Organization. Each entry in this set is in the form of triples ($arg1\rightarrow reln \rightarrow arg2$). For example, $fb:en.viswanathan\_anand \rightarrow	fb:people.person.profession \rightarrow	fb:en.chess\_master$. \\
 
-The text data consists of triples with text instead of freebase predicates. It is a subset of the data used in the original paper and it is again of the form ($arg1\rightarrow reln \rightarrow arg2$). An example of this database would be $"Vishwanathan$ $Anand" \rightarrow "profession$ $of" \rightarrow "chess$ $master"$. We have around 3,000,000 data entries of this kind.
+{\bf Text Data : }The text data consists of triples with text instead of freebase predicates. It is a subset of the data used in the original paper and it is again of the form ($arg1\rightarrow reln \rightarrow arg2$). An example of this database would be $"Vishwanathan$ $Anand" \rightarrow "profession$ $of" \rightarrow "chess$ $master"$. We have 3,000,000 data entries for the text triples.\\
 
-For both the data sets, the arguments are referred to as entities and the relationship is referred to as the edge between two entities in later parts of the report.
-
-The basic goal of alignment using question answer pairs is to align "profession of" with fb:people.person.profession using certain techniques. For every such alignment we have a set of features like text frequency, KB frequency, intersection size, etc.
-
+For both the data sets, the arguments are referred to as entities and the relationship is referred to as the edge between two entities in later parts of the report. The basic goal of alignment using question answer pairs is to align "profession of" with fb:people.person.profession using certain techniques. For every such alignment we have a set of features like text frequency, KB frequency, intersection size, etc.
 Let us now look at the algorithm by which we can align possible formulas or predicates for different words.
 
 \section{Algorithm}
-Given two sets of triples, the knowledge base triples and the text based triples we learn the alignment by creating templates and looking for similar template pattern matches in the data.
+Given two sets of triples, the knowledge base triples and the text based triples we learn the alignment by creating templates and looking for similar template pattern matches in the data.\\
 
-The triples can be interpreted as a graph with entities as vertices and relationships as edges. Let us look at some templates which 
+The triples can be interpreted as a graph with entities as vertices and relationships as edges. We define a "template" as a pattern of the formula which would be used to check for matches in the graph. We will have many formulas from the freebase data for a particular template. Based on the intersection between the entity pairs in both the freebase triples and the text triples we include the formula to the alignment. Each (formula, relationship) pair has a list of feature values like text frequency, KB frequency, intersection size which is gathered from the data. Let us look at some templates and their examples which we use to find patterns in the data.\\
+
+The various templates under consideration are:
+\begin{enumerate}
+	\item Case 1:$X\rightarrow Y$\\
+	Here X and Y stand for two entities and the edge between them represents the relationship between the entities. We need to find matches in both the Freebase data and the Text data. This template represent a straight forward alignment with between two relationships based on the intersection. For example: freebase data $fb:en.barrack_obama \rightarrow	fb:people.person.place_of_birth \rightarrow	fb:en.honolulu$ and text triple $"Barrack$ $Obama" \rightarrow "born$ $in" \rightarrow "honolulu"$ will result in a successful match and would result in the following alignment entry:\\
+	
+formula = "fb:people.person.place\_of\_birth"\\
+lexeme:"born in"\\
+source = "ALIGNMENT"\\
+features = \{FB\_typed\_size :16184.0, Intersection\_size\_typed:3.0, "NL-size":5.0\}
+
+{\bf Baseline} for the problem we are trying to solve uses only this template to determine the alignments between formula and lexeme. The method we use for testing the baseline and other models initially is using examples generated manually. Other templates we will be using for improving the baseline model is given henceforth.
+
+ 
+	\item $X\rightarrow Mediator \rightarrow Y$\\
+	Now we have entities X, Y and two edges which stand for two relationships in the database. Along with X and Y we see the inclusion of a new vertex Mediator. Mediator is a special Compound Value Type (CVT) node marked in the freebase data in a unique way. Mediators connect multiple entities together following a similar relationship. (Example, (i) the population of a country X in year 2010 was Y (ii) X was married to Y from t1 to t2) Similar to the previous template algorithm used, we match the pattern obtained using the data and include the alignment to our final output if the intersection is non empty. This would give us the ability to answer more queries. 
+	
+	\item $Y\leftarrow X \rightarrow C$
+	X, Y are the main entities and C is something like a constant with small domain to which the entity X has a certain relationship. For example, if we have a question which 
+	
+\end{enumerate}
 
 
 
@@ -103,5 +121,5 @@ The algorithm we use
 
 \section{Future work}
 
-
+\section{References}
 \end{document}
