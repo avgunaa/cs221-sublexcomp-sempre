@@ -1,0 +1,6 @@
+fb:en.marriage is not meaningful
+Text dates
+    pick the date listed in the id column vs pick the date with the highest granularity? 
+    resolve date differences
+Do we need to map text to ids?
+Duplicate text triples
