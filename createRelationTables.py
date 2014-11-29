@@ -5,7 +5,7 @@ import shutil
 # TODO (Gunaa and Diane): edit your own relative dir paths and 'git push' to easily switch out in the scripts
 GINA_DATA_RELATIVE_DIR = '../../Dropbox'
 GUNAA_DATA_RELATIVE_DIR = ''
-DIANE_DATA_RELATIVE_DIR = ''
+DIANE_DATA_RELATIVE_DIR = '../data'
 
 # Knowledge base and text triples storage directories
 KB_STORAGE_DIR = 'kbTriples'
