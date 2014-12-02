@@ -10,6 +10,7 @@ DIANE_DATA_RELATIVE_DIR = '../data'
 # Knowledge base and text triples storage directories
 KB_STORAGE_DIR = 'kbTriples'
 TEXT_STORAGE_DIR = 'textTriples'
+XYZ_STORAGE_DIR = 'xyzTriples'
 
 # Text triples storage file name quirks
 INVALID_NAMES = {'' : 'null', 'con' : 'notCon'}
@@ -67,7 +68,6 @@ def getFreebaseTriples(filename):
                 count = 0
         writeTriplesToFile(fb_triples, KB_STORAGE_DIR)
 
-'''
 def string_contains(string, sub):
     lstring = string.lower()
     lsub = sub.lower()
@@ -81,7 +81,6 @@ def get_better_relation(linesplit, arg2):
         else:
             break
     return ' '.join(linesplit[0:i+1])
-'''
 
 def isATextDate(str):
     return str[:3] != 'fb:'
@@ -117,10 +116,62 @@ def getTextTriples(filename):
             text_triples[reln].append(arg1 + "\t" + arg2)
     writeTriplesToFile(text_triples, TEXT_STORAGE_DIR)
 
+def getXYZRelations(kb_dir):
+
+    kb_files = os.listdir(kb_dir)
+    # Set-up table storage directory
+    setupStorageDirectory(XYZ_STORAGE_DIR)
+ 
+    count = 1
+    for kb_file1 in kb_files:
+        file1_dict = defaultdict(set)
+        file1_dict.clear()
+
+        with open(kb_dir + '/' + kb_file1, 'r') as fp1:
+          for line in fp1:
+            linesplit = line.split()
+            entityOne = linesplit[0]
+            entityTwo = linesplit[1]
+            file1_dict[entityOne].add(entityTwo)
+        print len(file1_dict)
+        num_lines1 = sum(1 for line in open(kb_dir + '/' + kb_file1))
+
+        for kb_file2 in kb_files:
+            print count
+            print kb_file1, kb_file2
+            count += 1
+            intersection = []
+            seen = set()
+            entrycount = 0
+            num_lines2 = sum(1 for line in open(kb_dir + '/' + kb_file2))
+            
+            with open(kb_dir + '/' + kb_file2, 'r') as fp2:
+              for line in fp2:
+               if line not in seen:
+                seen.add(line)
+                linesplit = line.split()
+                entityOne = linesplit[0]
+                entityTwo = linesplit[1]
+                if entityTwo in file1_dict:
+                  entrycount += len(file1_dict[entityTwo])
+                  for entity in file1_dict[entityTwo]:
+                    intersection.append(entityOne + '\t' + entity)
+                  if entrycount > num_lines1 + num_lines2:
+                      break
+            if len(intersection):
+                f = open(XYZ_STORAGE_DIR + '/' + kb_file2 + '^' + kb_file1, 'w')
+                for entry in intersection:
+                    f.write(entry + '\n')
+                f.close()
+            fp2.close()
+        fp1.close()
+
+
 if __name__ == '__main__':
     freebase_file = os.path.join(GINA_DATA_RELATIVE_DIR, 'data/freebase_subset.ttl')
     textdata_file = os.path.join(GINA_DATA_RELATIVE_DIR, 'data/linked-arg2-binary-extractions.txt')
-     
-    #getFreebaseTriples(freebase_file)
-    getTextTriples(textdata_file)
     
+    #getFreebaseTriples(freebase_file)
+    #getTextTriples(textdata_file)
+    
+    getXYZRelations(KB_STORAGE_DIR)

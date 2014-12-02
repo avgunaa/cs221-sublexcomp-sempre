@@ -48,6 +48,8 @@ def template2(kb_files, text_files):
     # Aligns patterns of the form
     #   X -> M -> Z
 
+
+
 def template3(kb_files, text_files):
     # TODO
     # Aligns patterns of the form
@@ -55,6 +57,16 @@ def template3(kb_files, text_files):
     #   |
     #   v
     #   C
+
+def template4(kb_files, text_files):
+    # TODO
+    # Aligns patterns of the form
+    #   X -> Z -> Y (Example: Grandfather)
+    for text_file in text_files:
+        fp1 = open(TEXT_TRIPLES_DIR + text_file, 'r')
+        text_lines = fp1.readlines()
+        
+
 
 if __name__ == '__main__':
     
