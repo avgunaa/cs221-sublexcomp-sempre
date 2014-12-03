@@ -1,17 +1,25 @@
 import os, time
 
-KB_STORAGE_DIR = 'kbTriples'
+KB_STORAGE_DIR = 'kbTriplesPeople'
 TEXT_STORAGE_DIR = 'textTriples'
-XYZ_STORAGE_DIR = 'xyzTriples'
+XYZ_STORAGE_DIR = 'xyzTriplesPeople'
+KB_TRIPLES_DIR = 'kbTriples/'
+TEXT_TRIPLES_DIR = 'textTriples/'
 KB_CONSTANT_TRIPLES_DIR = 'kbConstantTriples/'
 CONST_THRESHOLD = 3
+KB_SIZE_THRESHOLD = 100
+RATIO_THRESHOLD = 0.1
 
+
+# Exact Match function
+# Compares the strings and adds alignment if text phrase is 
+# prefix/suffix/exact match of the kb relation
 def exactMatch(kb_directory, text_directory):
 
     kb_files = os.listdir(kb_directory)
     text_files = os.listdir(text_directory)
 
-    f = open('alignment_baseline', 'w')
+    f = open('alignment_baseline_' + kb_directory, 'w')
 
     for kb_file in kb_files:
         for text_file in text_files:
@@ -30,20 +38,19 @@ def textMatch(kb_file, text_file):
         return True
     return False
 
-def alignment(kb_directory, text_directory, source):
+def alignment(kb_directory, text_directory, source, kb_size_threshold, ratio_threshold):
 
     kb_files = os.listdir(kb_directory)
     text_files = os.listdir(text_directory)
 
-    f = open('alignment_' + source, 'w')
+    f = open('alignment_' + source + '_' + kb_directory + '_' + str(kb_size_threshold) + '_' + str(ratio_threshold), 'w')
     # for every pair of (kb_file, text_file) we compute the various feature counts
     # if they have atleast one intersection
     for kb_file in kb_files:
         filepath = os.path.join(kb_directory, kb_file)
         fp1 = open(filepath, 'r')
         kb_lines = set(fp1.readlines())
-        if len(kb_lines) > 100:
-
+        if len(kb_lines) > kb_size_threshold:
           for text_file in text_files:
             intersect_count = 0
             filepath = os.path.join(text_directory, text_file)
@@ -57,6 +64,7 @@ def alignment(kb_directory, text_directory, source):
             features["INTERSECTION_SIZE"] = intersect_count
             features["KB_SIZE"] = len(kb_lines)
             features["TEXT_SIZE"] = len(text_lines)
+            features["TEXT_INTERSECT_RATIO"] = float(intersect_count)/float(len(text_lines))
 
             alignment = {}
             alignment['formula'] = source + ',' + kb_file
@@ -64,7 +72,7 @@ def alignment(kb_directory, text_directory, source):
             alignment['features'] = features
             alignment['lexeme'] = text_file
             
-            if intersect_count > 0:
+            if intersect_count > 0 and features["TEXT_INTERSECT_RATIO"] > ratio_threshold:
                 f.write(str(alignment) + '\n')
             fp2.close()
         fp1.close()
@@ -156,3 +164,7 @@ if __name__ == '__main__':
     #alignment(KB_STORAGE_DIR, TEXT_STORAGE_DIR, 'Template1') 
     #alignment(XYZ_STORAGE_DIR, TEXT_STORAGE_DIR, 'Template4Subset100')
     template3(os.listdir(KB_STORAGE_DIR), os.listdir(TEXT_STORAGE_DIR))
+ 
+    alignment(KB_STORAGE_DIR, TEXT_STORAGE_DIR, 'Template1', 0, 0.1)
+    alignment(XYZ_STORAGE_DIR, TEXT_STORAGE_DIR, 'Template4', KB_SIZE_THRESHOLD, RATIO_THRESHOLD)
+>>>>>>> Stashed changes

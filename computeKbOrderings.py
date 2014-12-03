@@ -14,7 +14,7 @@ def calculateF1(totalGuessed, correct, totalCorrect):
         r = 1.0 * correct / totalCorrect # no. of text relation pairs found in kb table / no. of pairs in text relation
         return 2 * p * r / (p + r)
 
-class KbStats:
+class KbStats():
     def __init__(self, alignment):
         self.alignment = alignment
      
@@ -34,7 +34,7 @@ class KbStats:
         self.features['BEST'] = best
         
     def __str__(self):
-        return str(self.alignment) + '\n'
+        return str(self.alignment)
 
 def splitTrainTestData():
     script.setupStorageDirectory(TEST_DATA_STORAGE_DIR)
