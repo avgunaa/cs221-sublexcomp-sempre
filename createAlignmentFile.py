@@ -4,6 +4,31 @@ KB_STORAGE_DIR = 'kbTriples'
 TEXT_STORAGE_DIR = 'textTriples'
 XYZ_STORAGE_DIR = 'xyzTriples'
 
+def exactMatch(kb_directory, text_directory):
+
+    kb_files = os.listdir(kb_directory)
+    text_files = os.listdir(text_directory)
+
+    f = open('alignment_baseline', 'w')
+
+    for kb_file in kb_files:
+        for text_file in text_files:
+            if textMatch(kb_file, text_file):
+                alignment = {}
+                alignment['lexeme'] = text_file
+                alignment['formula'] = 'ExactMatch'+ ',' + kb_file
+                alignment['features'] = {}
+                alignment['source'] = 'ExactMatch'
+                f.write(str(alignment) + '\n')
+
+def textMatch(kb_file, text_file):
+    kb_file_list = kb_file.split('.')
+    text_file_list = text_file.split()
+    for word in text_file_list:
+        if word not in kb_file_list[-1].split('_'):
+            return False
+    return True
+
 def alignment(kb_directory, text_directory, source):
 
     kb_files = os.listdir(kb_directory)
@@ -44,6 +69,7 @@ def alignment(kb_directory, text_directory, source):
 
 
 if __name__ == '__main__':
-    
+   
+    exactMatch(KB_STORAGE_DIR, TEXT_STORAGE_DIR)
     #alignment(KB_STORAGE_DIR, TEXT_STORAGE_DIR, 'Template1') 
-    alignment(XYZ_STORAGE_DIR, TEXT_STORAGE_DIR, 'Template4')
+    #alignment(XYZ_STORAGE_DIR, TEXT_STORAGE_DIR, 'Template4')
