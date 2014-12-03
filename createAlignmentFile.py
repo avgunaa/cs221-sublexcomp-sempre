@@ -22,12 +22,15 @@ def exactMatch(kb_directory, text_directory):
                 f.write(str(alignment) + '\n')
 
 def textMatch(kb_file, text_file):
-    kb_file_list = kb_file.split('.')
+    kb_file_list = kb_file.split('.')[-1].split('_')
     text_file_list = text_file.split()
-    for word in text_file_list:
-        if word not in kb_file_list[-1].split('_'):
-            return False
-    return True
+    if text_file_list == kb_file_list[0:len(text_file_list)] or text_file_list == kb_file_list[len(kb_file_list) - len(text_file_list):]:
+        return True
+    return False
+    #for word in text_file_list:
+    #    if word not in kb_file_list[-1].split('_'):
+    #        return False
+    #return True
 
 def alignment(kb_directory, text_directory, source):
 
