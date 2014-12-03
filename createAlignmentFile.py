@@ -3,8 +3,6 @@ import os, time
 KB_STORAGE_DIR = 'kbTriples'
 TEXT_STORAGE_DIR = 'textTriples'
 XYZ_STORAGE_DIR = 'xyzTriples'
-KB_TRIPLES_DIR = 'kbTriples/'
-TEXT_TRIPLES_DIR = 'textTriples/'
 KB_CONSTANT_TRIPLES_DIR = 'kbConstantTriples/'
 CONST_THRESHOLD = 3
 
@@ -77,7 +75,7 @@ def findConstantTables(kb_files, threshold):
     const_files = set()
 
     for kb_file in kb_files:
-        fp = open(KB_TRIPLES_DIR + kb_file, 'r')
+        fp = open(KB_STORAGE_DIR + '/' + kb_file, 'r')
         argSet = set()
 
         for line in fp:
@@ -112,7 +110,7 @@ def template3(kb_files, text_files):
 
     # intersect all kbtables with const tables and create new tables
     for kb_file in kb_files:
-        fp1 = open(KB_TRIPLES_DIR + kb_file, 'r')
+        fp1 = open(KB_STORAGE_DIR + '/' + kb_file, 'r')
 	kb_file_category = kb_file.split('.')[0]
 
         for const_file in const_files:
@@ -124,7 +122,7 @@ def template3(kb_files, text_files):
 	    if(const_file_category != kb_file_category):
 	        continue
 
-            fp2 = open(KB_TRIPLES_DIR + const_file)
+            fp2 = open(KB_STORAGE_DIR + '/' + const_file)
             # create a map of the current const table
             const_map = dict()
 
@@ -154,6 +152,7 @@ def template3(kb_files, text_files):
 
 if __name__ == '__main__':
    
-    exactMatch(KB_STORAGE_DIR, TEXT_STORAGE_DIR)
+    #exactMatch(KB_STORAGE_DIR, TEXT_STORAGE_DIR)
     #alignment(KB_STORAGE_DIR, TEXT_STORAGE_DIR, 'Template1') 
     #alignment(XYZ_STORAGE_DIR, TEXT_STORAGE_DIR, 'Template4Subset100')
+    template3(os.listdir(KB_STORAGE_DIR), os.listdir(TEXT_STORAGE_DIR))
