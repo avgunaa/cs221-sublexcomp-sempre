@@ -4,3 +4,8 @@ Text dates
     resolve date differences
 Do we need to map text to ids?
 Duplicate text triples
+
+TODO:
+1) Identify the constants from the kbTriples
+2) Write function to create relation tables for X->Z->Y
+3) and for  Y<-X->C
