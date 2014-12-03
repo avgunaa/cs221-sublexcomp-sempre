@@ -52,7 +52,7 @@ def splitTrainTestData():
             for textTriple in textTriples[:count]:
                 testFp.write(textTriple)
                 
-def computeKbOrderings(kbStorageDir, source):
+def computeAlignment(kbStorageDir, source):
     '''
     format: tab-joined relation and F1 score
     kbOrderings ['born in'] = ['birthplace is   0.8', ...]
@@ -82,9 +82,14 @@ def computeKbOrderings(kbStorageDir, source):
 
         textTrainTriples[textFile] = set(textTriples)
         textTrainSubjects[textFile] = set([x.split()[0] for x in textTriples]) # To calculate F1 score
-        
+    
+    #############################################################################
+    #Just people categories for now
+    #############################################################################
+    kbFiles = [x for x in kbFiles if x[:7] == 'people.']
+    
     # Calculate alignment
-    for kbFile in kbFiles:
+    for i, kbFile in enumerate(kbFiles):
         stats = []
         kbFilepath = os.path.join(script.KB_STORAGE_DIR, kbFile)
         kbTriples = set()
@@ -115,8 +120,7 @@ def computeKbOrderings(kbStorageDir, source):
             
             # Add new KbStat to stats
             stats.append(KbStats(kbFile, textFile, source, intersectCount, kbSize, textSize, f1))
-            print '.'
-        print '\nDone\n'
+        print str(i+1) + '/' + str(len(kbFiles))
         
         # Early exit if no aligned kbTables
         if len(stats) is 0:
@@ -131,4 +135,4 @@ def computeKbOrderings(kbStorageDir, source):
 if __name__ == '__main__':    
     #splitTrainTestData() # Only run once, else the train/test data split will change
     #script.setupStorageDirectory(KB_ORDER_STORAGE_DIR) # Only run once, else all results will be erased
-    computeKbOrderings(script.KB_STORAGE_DIR, 'testing')
+    computeAlignment(script.KB_STORAGE_DIR, 'testing')
