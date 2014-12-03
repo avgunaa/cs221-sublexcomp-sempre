@@ -1,6 +1,7 @@
 from collections import defaultdict
 import os
 import shutil
+import re
 
 # TODO (Gunaa and Diane): edit your own relative dir paths and 'git push' to easily switch out in the scripts
 GINA_DATA_RELATIVE_DIR = '../../Dropbox'
@@ -33,7 +34,7 @@ def writeTriplesToFile(triples, directory):
         filepath = os.path.join(directory, filename)
         try:
             with open(filepath, 'a+') as fp:
-                fp.write("\n".join(triples[key]) + '\n')
+                fp.write("\n".join(triples[key]) + "\n")   
         except IOError:
             print key
 
@@ -41,6 +42,16 @@ def setupStorageDirectory(directory):
     if os.path.exists(directory):
         shutil.rmtree(directory)
     os.makedirs(directory)
+
+def isAKbDate(str):
+    return str[-15:] == '"^^xsd:datetime'
+    
+def formatIfKbDate(str):
+    result = str
+    if isAKbDate(str):
+        strSplit = re.split('-|"', str)
+        result = strSplit[1]
+    return result
     
 def getFreebaseTriples(filename):
     '''
@@ -49,7 +60,7 @@ def getFreebaseTriples(filename):
     '''
     # Set-up table storage directory
     setupStorageDirectory(KB_STORAGE_DIR)
-        
+    
     with open(filename,"r") as fp:
         fb_triples = defaultdict(set)
         count = 0
@@ -57,7 +68,9 @@ def getFreebaseTriples(filename):
             linesplit = line.split()
             relation = linesplit[1][3:]  # Remove 'fb:' prefix
             entityOne = linesplit[0]
+            entityOne = formatIfKbDate(entityOne)
             entityTwo = linesplit[2][:-1]  # Remove '.' suffix
+            entityTwo = formatIfKbDate(entityTwo)
             fb_triples[relation].add( entityOne + "\t" + entityTwo )
             
             # Prevent running out of memory (MemoryError)
@@ -159,7 +172,7 @@ if __name__ == '__main__':
     freebase_file = os.path.join(GUNAA_DATA_RELATIVE_DIR, 'data/freebase_subset.ttl')
     textdata_file = os.path.join(GUNAA_DATA_RELATIVE_DIR, 'data/linked-arg2-binary-extractions.txt')
     
-    #getFreebaseTriples(freebase_file)
+    getFreebaseTriples(freebase_file)
     #getTextTriples(textdata_file)
     
     getXYZRelations(KB_STORAGE_DIR)
