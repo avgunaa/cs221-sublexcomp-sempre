@@ -27,10 +27,6 @@ def textMatch(kb_file, text_file):
     if text_file_list == kb_file_list[0:len(text_file_list)] or text_file_list == kb_file_list[len(kb_file_list) - len(text_file_list):]:
         return True
     return False
-    #for word in text_file_list:
-    #    if word not in kb_file_list[-1].split('_'):
-    #        return False
-    #return True
 
 def alignment(kb_directory, text_directory, source):
 
@@ -44,8 +40,9 @@ def alignment(kb_directory, text_directory, source):
         filepath = os.path.join(kb_directory, kb_file)
         fp1 = open(filepath, 'r')
         kb_lines = set(fp1.readlines())
+        if len(kb_lines) > 100:
 
-        for text_file in text_files:
+          for text_file in text_files:
             intersect_count = 0
             filepath = os.path.join(text_directory, text_file)
             fp2 = open(filepath, 'r')
@@ -75,4 +72,4 @@ if __name__ == '__main__':
    
     exactMatch(KB_STORAGE_DIR, TEXT_STORAGE_DIR)
     #alignment(KB_STORAGE_DIR, TEXT_STORAGE_DIR, 'Template1') 
-    #alignment(XYZ_STORAGE_DIR, TEXT_STORAGE_DIR, 'Template4')
+    #alignment(XYZ_STORAGE_DIR, TEXT_STORAGE_DIR, 'Template4Subset100')

@@ -4,13 +4,13 @@ import shutil
 
 # TODO (Gunaa and Diane): edit your own relative dir paths and 'git push' to easily switch out in the scripts
 GINA_DATA_RELATIVE_DIR = '../../Dropbox'
-GUNAA_DATA_RELATIVE_DIR = ''
+GUNAA_DATA_RELATIVE_DIR = '..'
 DIANE_DATA_RELATIVE_DIR = '../data'
 
 # Knowledge base and text triples storage directories
-KB_STORAGE_DIR = 'kbTriples'
-TEXT_STORAGE_DIR = 'textTriples'
-XYZ_STORAGE_DIR = 'xyzTriples'
+KB_STORAGE_DIR = 'kbTriplesUnique'
+TEXT_STORAGE_DIR = 'textTriplesUnique'
+XYZ_STORAGE_DIR = 'xyzTriplesUnique'
 
 # Text triples storage file name quirks
 INVALID_NAMES = {'' : 'null', 'con' : 'notCon'}
@@ -33,7 +33,7 @@ def writeTriplesToFile(triples, directory):
         filepath = os.path.join(directory, filename)
         try:
             with open(filepath, 'a+') as fp:
-                fp.write("\n".join(triples[key]))   
+                fp.write("\n".join(triples[key]) + '\n')
         except IOError:
             print key
 
@@ -155,12 +155,11 @@ def getXYZRelations(kb_dir):
             fp2.close()
         fp1.close()
 
-
 if __name__ == '__main__':
-    freebase_file = os.path.join(GINA_DATA_RELATIVE_DIR, 'data/freebase_subset.ttl')
-    textdata_file = os.path.join(GINA_DATA_RELATIVE_DIR, 'data/linked-arg2-binary-extractions.txt')
+    freebase_file = os.path.join(GUNAA_DATA_RELATIVE_DIR, 'data/freebase_subset.ttl')
+    textdata_file = os.path.join(GUNAA_DATA_RELATIVE_DIR, 'data/linked-arg2-binary-extractions.txt')
     
     #getFreebaseTriples(freebase_file)
     #getTextTriples(textdata_file)
     
-    #getXYZRelations(KB_STORAGE_DIR)
+    getXYZRelations(KB_STORAGE_DIR)
