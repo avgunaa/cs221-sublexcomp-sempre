@@ -113,10 +113,16 @@ def template3(kb_files, text_files):
     # intersect all kbtables with const tables and create new tables
     for kb_file in kb_files:
         fp1 = open(KB_TRIPLES_DIR + kb_file, 'r')
+	kb_file_category = kb_file.split('.')[0]
 
         for const_file in const_files:
             if(const_file == kb_file):  # don't intersect a table with itself
                 continue
+
+	    # only intersect them if they belong to the same category
+	    const_file_category = const_file.split('.')[0]
+	    if(const_file_category != kb_file_category):
+	        continue
 
             fp2 = open(KB_TRIPLES_DIR + const_file)
             # create a map of the current const table
@@ -136,7 +142,7 @@ def template3(kb_files, text_files):
                     f = open(KB_CONSTANT_TRIPLES_DIR + '/' + newTableName, 'a')
                     alignment = dict()
                     alignment['kb_arg0'] = kb_line_args[0]
-                    alignment['kb_arg1'] = kb_line_args[1]
+                    alignment['kb_arg1'] = kb_line_args[1].split('\n')[0]
                     alignment['const_property'] = const_property
                     f.write(str(alignment) + '\n')
                     f.close()
