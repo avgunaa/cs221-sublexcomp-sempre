@@ -9,3 +9,5 @@ TODO:
 1) Identify the constants from the kbTriples
 2) Write function to create relation tables for X->Z->Y
 3) and for  Y<-X->C
+
+X president elect of Y - Can be obtained from the nationality table

@@ -33,7 +33,7 @@ class KbStats:
         self.features['R'] = r
         
     def __str__(self):
-        return str(self.alignment) + '\n'
+        return str(self.alignment)
 
 def splitTrainTestData():
     # Set-up table storage directory
