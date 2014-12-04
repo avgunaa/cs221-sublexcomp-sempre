@@ -8,14 +8,15 @@ import random
 
 KB_ORDER_STORAGE_DIR = 'kbOrdering'
 TEST_DATA_STORAGE_DIR = 'testData'
+KB_ENTITY_INDEX_FILENAME = 'kbEntityIndex.txt'
 
 def calculateF1(totalGuessed, correct, totalCorrect):
         p = 1.0 * correct / totalGuessed # no. of text relation pairs found in kb table / no. of text subjects found in kb table
         r = 1.0 * correct / totalCorrect # no. of text relation pairs found in kb table / no. of pairs in text relation
-        return 2 * p * r / (p + r)
+        return 2 * p * r / (p + r), p, r
 
 class KbStats:   
-    def __init__(self, kbFile, textFile, source, intersectCount, kbSize, textSize, f1):
+    def __init__(self, kbFile, textFile, source, intersectCount, kbSize, textSize, f1, p, r):
         self.alignment = {}
         self.features = {}
         
@@ -28,14 +29,19 @@ class KbStats:
         self.features['KB_SIZE'] = kbSize
         self.features['TEXT_SIZE'] = textSize
         self.features['F1'] = f1
+        self.features['P'] = p
+        self.features['R'] = r
         
     def __str__(self):
         return str(self.alignment) + '\n'
 
 def splitTrainTestData():
     # Set-up table storage directory
-    script.setupStorageDirectory(TEST_DATA_STORAGE_DIR)
-    
+    if os.path.exists(TEST_DATA_STORAGE_DIR):
+        print '\nWARNING: Data already split into training/test. Remove ' + TEST_DATA_STORAGE_DIR + 'directory to re-split.\n'
+        return
+    os.makedirs(TEST_DATA_STORAGE_DIR)
+        
     textFiles = os.listdir(script.TEXT_STORAGE_DIR)
     
     for textFile in textFiles:
@@ -52,19 +58,21 @@ def splitTrainTestData():
             for textTriple in textTriples[:count]:
                 testFp.write(textTriple)
                 
-def computeAlignment(kbStorageDir, source):
+def computeKbOrdering(kbStorageDir, source):
     '''
     format: tab-joined relation and F1 score
     kbOrderings ['born in'] = ['birthplace is   0.8', ...]
-    '''    
-    # Delete results file if it exists already
-    resultsFilepath = os.path.join(KB_ORDER_STORAGE_DIR, 'alignment_'+source)
-    if os.path.exists(resultsFilepath):
-        os.remove(resultsFilepath)
-        
+    '''
+    # Set-up table storage directory
+    if not os.path.exists(KB_ORDER_STORAGE_DIR):
+        os.makedirs(KB_ORDER_STORAGE_DIR)
+    
     # Get file names
     kbFiles = os.listdir(kbStorageDir)
     textFiles = os.listdir(script.TEXT_STORAGE_DIR)
+    
+    # Get entity index into kb tables
+    # TODO: KB_ENTITY_INDEX_FILENAME
     
     # Read in all text triples
     textTrainTriples = {}
@@ -89,6 +97,7 @@ def computeAlignment(kbStorageDir, source):
     kbFiles = [x for x in kbFiles if x[:7] == 'people.']
     
     # Calculate alignment
+    textStats = defaultdict(list)
     for i, kbFile in enumerate(kbFiles):
         stats = []
         kbFilepath = os.path.join(script.KB_STORAGE_DIR, kbFile)
@@ -116,23 +125,25 @@ def computeAlignment(kbStorageDir, source):
             for x in kbSubjects:
                 if x in textSubjects:
                     totalGuessed += 1
-            f1 = calculateF1(totalGuessed, intersectCount, textSize)
+            f1, p, r = calculateF1(totalGuessed, intersectCount, textSize)
             
-            # Add new KbStat to stats
-            stats.append(KbStats(kbFile, textFile, source, intersectCount, kbSize, textSize, f1))
+            # Add new KbStat to textStats
+            textStats[textFile].append(KbStats(kbFile, textFile, source, intersectCount, kbSize, textSize, f1, p, r))
         print str(i+1) + '/' + str(len(kbFiles))
         
-        # Early exit if no aligned kbTables
-        if len(stats) is 0:
-            continue
+    # Sort stats for each text relation by f1 score
+    for textFile in textStats.keys():
+        textStats[textFile] = sorted(textStats[textFile], key=lambda x: x.alignment['features']['F1'], reverse=True)
         
-        # Store stats to file
-        with open(resultsFilepath, 'a') as f:
-            for s in stats:
-                f.write(str(s))
+    # Store stats to file
+    # If no intersection found with any kb table, then no alignment file created for the text relation.
+    for textFile in textStats.keys():
+        resultsFile = os.path.join(KB_ORDER_STORAGE_DIR, 'alignment_'+source+'_'+textFile)
+        with open(resultsFile, 'w') as f:
+            for stats in textStats[textFile]:
+                f.write(str(stats))
     
 
 if __name__ == '__main__':    
-    #splitTrainTestData() # Only run once, else the train/test data split will change
-    #script.setupStorageDirectory(KB_ORDER_STORAGE_DIR) # Only run once, else all results will be erased
-    computeAlignment(script.KB_STORAGE_DIR, 'testing')
+    splitTrainTestData()
+    computeKbOrdering(script.KB_STORAGE_DIR, 'testing')
