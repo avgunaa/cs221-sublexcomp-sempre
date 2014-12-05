@@ -1,0 +1,13 @@
+People category
+
+TEST 1:
+template1 - 0.281
+template4 - 0.319
+
+
+
+Different Testing methods
+TEST1 : If alignment is present then +1 else 0
+TEST2 : If alignment is present then +F1 score else 0
+TEST3 : If correct answer then +1 else 0
+
