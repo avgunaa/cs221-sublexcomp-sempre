@@ -34,7 +34,7 @@ def writeTriplesToFile(triples, directory):
         filepath = os.path.join(directory, filename)
         try:
             with open(filepath, 'a+') as fp:
-                fp.write("\n".join(triples[key]) + "\n")   
+                fp.write("\n".join(triples[key]) + "\n")
         except IOError:
             print key
 

@@ -15,10 +15,10 @@ def calculateF1(totalGuessed, correct, totalCorrect):
         return 2 * p * r / (p + r)
 
 class KbStats():
-    def __init__(self, alignment):
-        self.alignment = alignment
+    #def __init__(self, alignment):
+    #    self.alignment = alignment
      
-    def setStats(self, kbFile, textFile, source, intersectCount, kbSize, textSize, f1, best):
+    def __init__(self, kbFile, textFile, source, intersectCount, kbSize, textSize, f1):
         self.alignment = {}
         self.features = {}
         
@@ -59,12 +59,12 @@ def computeAlignment(kbStorageDir, source):
     '''
     format: tab-joined relation and F1 score
     kbOrderings ['born in'] = ['birthplace is   0.8', ...]
-    '''    
+    '''
     # Delete results file if it exists already
-    resultsFilepath = os.path.join(KB_ORDER_STORAGE_DIR, 'alignment_'+source)
+    resultsFilepath = os.path.join(KB_ORDER_STORAGE_DIR, 'alignment_'+source+'_'+kbStorageDir)
     if os.path.exists(resultsFilepath):
         os.remove(resultsFilepath)
-        
+    
     # Get file names
     kbFiles = os.listdir(kbStorageDir)
     textFiles = os.listdir(script.TEXT_STORAGE_DIR)
@@ -94,7 +94,7 @@ def computeAlignment(kbStorageDir, source):
     # Calculate alignment
     for i, kbFile in enumerate(kbFiles):
         stats = []
-        kbFilepath = os.path.join(script.KB_STORAGE_DIR, kbFile)
+        kbFilepath = os.path.join(kbStorageDir, kbFile)
         kbTriples = set()
         with open(kbFilepath, 'r') as fp2:
             kbTriples = set(fp2.readlines())
@@ -132,10 +132,11 @@ def computeAlignment(kbStorageDir, source):
         # Store stats to file
         with open(resultsFilepath, 'a') as f:
             for s in stats:
-                f.write(str(s))
-    
+                f.write(str(s) + '\n')
 
-if __name__ == '__main__':    
+if __name__ == '__main__':
     #splitTrainTestData() # Only run once, else the train/test data split will change
     #script.setupStorageDirectory(KB_ORDER_STORAGE_DIR) # Only run once, else all results will be erased
-    computeAlignment(script.KB_STORAGE_DIR, 'testing')
+    #computeAlignment('kbTriplesPeople', 'Template1')
+    computeAlignment('xyzTriplesPeople', 'Template4')
+
