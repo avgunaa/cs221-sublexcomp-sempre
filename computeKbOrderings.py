@@ -8,7 +8,7 @@ import random
 
 KB_ORDER_STORAGE_DIR = 'kbOrdering'
 TEST_DATA_STORAGE_DIR = 'testData'
-TEST_SUBJECT_INDEX_FILENAME = 'testSubjectIndex.txt' # Maps test subjects to kb Relation tables that contains that subject
+KB_ENTITY_INDEX_FILENAME = 'kbEntityIndex.txt'
 
 def calculateF1(totalGuessed, correct, totalCorrect):
         p = 1.0 * correct / totalGuessed # no. of text relation pairs found in kb table / no. of text subjects found in kb table
@@ -77,49 +77,40 @@ def computeKbOrdering(kbStorageDir, source):
     kbFiles = os.listdir(kbStorageDir)
     textFiles = os.listdir(script.TEXT_STORAGE_DIR)
     
+    # Get entity index into kb tables
+    # TODO: KB_ENTITY_INDEX_FILENAME
+    
     # Read in all text triples
     textTrainTriples = {}
     textTrainSubjects = {}
-    testSubjects = set([]) # Store set of test subjects
     for textFile in textFiles:
         tFilepath = os.path.join(script.TEXT_STORAGE_DIR, textFile)
         testFilepath = os.path.join(TEST_DATA_STORAGE_DIR, textFile)
         
         # Get training triples
         textTriples = set([])
-        testTriples = set([])
         with open(tFilepath, 'r') as fp1: # Get text triples
             textTriples = set(fp1.readlines())
         with open(testFilepath, 'r') as testFp: # Remove test triples
-            testTriples = set(testFp.readlines())
-        textTriples -= textTriples
-        
+            textTriples -= set(testFp.readlines())
+
         textTrainTriples[textFile] = set(textTriples)
         textTrainSubjects[textFile] = set([x.split()[0] for x in textTriples]) # To calculate F1 score
-        testSubjects.update([x.split()[0] for x in testTriples])
     
     #############################################################################
     #Just people categories for now
     #############################################################################
     #kbFiles = [x for x in kbFiles if x[:7] == 'people.']
     
-    
+    # Calculate alignment
     textStats = defaultdict(list)
-    testSubjectIndex = defaultdict(set)
     for i, kbFile in enumerate(kbFiles):
         stats = []
         kbFilepath = os.path.join(kbStorageDir, kbFile)
         kbTriples = set()
         with open(kbFilepath, 'r') as fp2:
             kbTriples = set(fp2.readlines())
-        kbSubjects = [x.split()[0] for x in kbTriples]
         
-        # Calculate test subject index
-        subjectOverlap = set(kbSubjects) & testSubjects
-        for subject in subjectOverlap:
-            testSubjectIndex[subject].add(kbFile)
-            
-        # Calculate alignment
         for textFile in textFiles:
             textTriples = textTrainTriples[textFile]
             textSubjects = textTrainSubjects[textFile]
@@ -135,6 +126,7 @@ def computeKbOrdering(kbStorageDir, source):
             textSize = len(textTriples)
             
             # Calculate F1 score
+            kbSubjects = [x.split()[0] for x in kbTriples]
             totalGuessed = 0
             for x in kbSubjects:
                 if x in textSubjects:
@@ -157,10 +149,7 @@ def computeKbOrdering(kbStorageDir, source):
             for stats in textStats[textFile]:
                 f.write(str(stats) + '\n')
 
-    # Store subject Index to file
-    with open(TEST_SUBJECT_INDEX_FILENAME, 'w') as f:
-        f.write(str(testSubjectIndex))
-
 if __name__ == '__main__':
     #splitTrainTestData()
-    computeKbOrdering('xyzTriplesPeople', 'Template4')
+    computeKbOrdering('kbCombinedPeople', 'Combined1and4')
+

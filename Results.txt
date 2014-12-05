@@ -1,13 +1,28 @@
 People category
 
 TEST 1:
-template1 - 0.281
-template4 - 0.319
+template1 - 28.17
+template4 - 31.90
+Combined - 34.96
 
+TEST 2:
+template1 - 12.22
+template4 - 7.45
+Combined - 14.89
 
+TEST 3:
+template1 - 23.16
+template4 - 22.55
+Combined - 23.05
+
+TEST 4:
+template1 - 9.46
+template4 - 4.49
+Combined - 11.38
 
 Different Testing methods
 TEST1 : If alignment is present then +1 else 0
 TEST2 : If alignment is present then +F1 score else 0
-TEST3 : If correct answer then +1 else 0
+TEST3 : If alignment is present then +maxF1/sum(F1) else 0
+TEST4 : If correct answer then +1 else 0
 
