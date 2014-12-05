@@ -102,7 +102,6 @@ def findConstantTables(kb_files, threshold):
 
 
 def template3(kb_files, text_files):
-    # TODO
     # Aligns patterns of the form
     #   X -> Y
     #   |
@@ -111,7 +110,7 @@ def template3(kb_files, text_files):
 
     # find constant tables
     const_files = findConstantTables(kb_files, CONST_THRESHOLD)
-    
+
     # create a dir to put results
     if not os.path.exists(KB_CONSTANT_TRIPLES_DIR):
         os.makedirs(KB_CONSTANT_TRIPLES_DIR)
@@ -119,16 +118,16 @@ def template3(kb_files, text_files):
     # intersect all kbtables with const tables and create new tables
     for kb_file in kb_files:
         fp1 = open(KB_STORAGE_DIR + '/' + kb_file, 'r')
-	kb_file_category = kb_file.split('.')[0]
+        kb_file_category = kb_file.split('.')[0]
 
         for const_file in const_files:
             if(const_file == kb_file):  # don't intersect a table with itself
                 continue
 
-	    # only intersect them if they belong to the same category
-	    const_file_category = const_file.split('.')[0]
-	    if(const_file_category != kb_file_category):
-	        continue
+            # only intersect them if they belong to the same category
+            const_file_category = const_file.split('.')[0]
+            if(const_file_category != kb_file_category):
+                continue
 
             fp2 = open(KB_STORAGE_DIR + '/' + const_file)
             # create a map of the current const table
@@ -139,9 +138,27 @@ def template3(kb_files, text_files):
                 const_map[const_line_args[0]] = const_line_args[len(const_line_args) - 1].split('\n')[0]
 
             # now check if the 2nd arg of kb_line exists in const_map
-            for kb_line in fp1:
-                kb_line_args = kb_line.split('\t')
+            while(True):
+                first_spouse_args = fp1.readline().split('\t')
+                if(first_spouse_args == ""):    # EOF
+                    break
+                first_spouse = first_spouse_args[len(first_spouse_args) - 1].split('\n')[0]
+                second_spouse_args = fp1.readline().split('\t')
+                second_spouse = second_spouse_args[len(second_spouse_args) - 1].split('\n')[0]
 
+                if first_spouse in const_map and second_spouse in const_map:
+                    first_spouse_const_prop = const_map[first_spouse]
+                    second_spouse_const_prop = const_map[second_spouse]
+                    newTableName1 = kb_file + 'AND' + const_file + 'IS' + first_spouse_const_prop
+                    f1 = open(KB_CONSTANT_TRIPLES_DIR + '/' + newTableName1, 'a')
+                    f1.write(first_spouse + '\t' + second_spouse + '\n')
+                    newTableName2 = kb_file + 'AND' + const_file + 'IS' + second_spouse_const_prop
+                    f2 = open(KB_CONSTANT_TRIPLES_DIR + '/' + newTableName2, 'a')
+                    f2.write(second_spouse + '\t' + first_spouse + '\n')
+                    f1.close()
+                    f2.close()
+
+                '''
                 if kb_line_args[1].split('\n')[0] in const_map:
                     const_property = const_map[kb_line_args[1].split('\n')[0]]
                     newTableName = kb_file + 'AND' + const_file + 'IS' + const_property
@@ -150,8 +167,10 @@ def template3(kb_files, text_files):
                     alignment['kb_arg0'] = kb_line_args[0]
                     alignment['kb_arg1'] = kb_line_args[1].split('\n')[0]
                     alignment['const_property'] = const_property
-                    f.write(str(alignment) + '\n')
+                    #f.write(str(alignment) + '\n')
+                    f.write(kb_line_args[0] + '\t' + kb_line_args[1].split('\n')[0] + '\n')
                     f.close()
+                '''
 
             fp2.close()
 
@@ -163,8 +182,8 @@ if __name__ == '__main__':
     #exactMatch(KB_STORAGE_DIR, TEXT_STORAGE_DIR)
     #alignment(KB_STORAGE_DIR, TEXT_STORAGE_DIR, 'Template1') 
     #alignment(XYZ_STORAGE_DIR, TEXT_STORAGE_DIR, 'Template4Subset100')
-    template3(os.listdir(KB_STORAGE_DIR), os.listdir(TEXT_STORAGE_DIR))
+    template3(os.listdir(KB_TRIPLES_DIR), os.listdir(TEXT_TRIPLES_DIR))
  
     alignment(KB_STORAGE_DIR, TEXT_STORAGE_DIR, 'Template1', 0, 0.1)
     alignment(XYZ_STORAGE_DIR, TEXT_STORAGE_DIR, 'Template4', KB_SIZE_THRESHOLD, RATIO_THRESHOLD)
->>>>>>> Stashed changes
+
