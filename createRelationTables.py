@@ -128,12 +128,14 @@ def getXYZRelations(kb_dir):
           for line in fp1:
             linesplit = line.split()
             entityOne = linesplit[0]
+            if len(linesplit) != 2:
+              continue
             entityTwo = linesplit[1]
             file1_dict[entityOne].add(entityTwo)
         num_lines1 = sum(1 for line in open(kb_dir + '/' + kb_file1))
 
         for kb_file2 in kb_files:
-            print count
+            print str(count) +'/'+ str(len(kb_files)*len(kb_files))
             count += 1
             intersection = []
             seen = set()
@@ -145,11 +147,14 @@ def getXYZRelations(kb_dir):
                if line not in seen:
                 seen.add(line)
                 linesplit = line.split()
+                if len(linesplit) != 2:
+                  continue
                 entityOne = linesplit[0]
                 entityTwo = linesplit[1]
                 if entityTwo in file1_dict:
                   for entity in file1_dict[entityTwo]:
                     intersection.append(entityOne + '\t' + entity)
+
                   #if len(intersection) > 100000:
                   #    f = open(XYZ_STORAGE_DIR + '/' + kb_file2 + '^' + kb_file1, 'a')
                   #    for entry in intersection:

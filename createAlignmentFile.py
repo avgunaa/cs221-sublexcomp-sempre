@@ -1,10 +1,11 @@
 import os, time
+#import createRelationTables as script
 
 KB_STORAGE_DIR = 'kbTriplesPeople'
 TEXT_STORAGE_DIR = 'textTriples'
 XYZ_STORAGE_DIR = 'xyzTriplesPeople'
-KB_TRIPLES_DIR = 'kbTriples/'
-TEXT_TRIPLES_DIR = 'textTriples/'
+KB_TRIPLES_DIR = 'kbTriplesPeople/'
+TEXT_TRIPLES_DIR = 'textTriplesUnique/'
 KB_CONSTANT_TRIPLES_DIR = 'kbConstantTriples/'
 CONST_THRESHOLD = 3
 KB_SIZE_THRESHOLD = 100
@@ -110,7 +111,6 @@ def template3(kb_files, text_files):
 
     # find constant tables
     const_files = findConstantTables(kb_files, CONST_THRESHOLD)
-
     # create a dir to put results
     if not os.path.exists(KB_CONSTANT_TRIPLES_DIR):
         os.makedirs(KB_CONSTANT_TRIPLES_DIR)
@@ -184,6 +184,6 @@ if __name__ == '__main__':
     #alignment(XYZ_STORAGE_DIR, TEXT_STORAGE_DIR, 'Template4Subset100')
     template3(os.listdir(KB_TRIPLES_DIR), os.listdir(TEXT_TRIPLES_DIR))
  
-    alignment(KB_STORAGE_DIR, TEXT_STORAGE_DIR, 'Template1', 0, 0.1)
-    alignment(XYZ_STORAGE_DIR, TEXT_STORAGE_DIR, 'Template4', KB_SIZE_THRESHOLD, RATIO_THRESHOLD)
+    #alignment(KB_STORAGE_DIR, TEXT_STORAGE_DIR, 'Template1', 0, 0.1)
+    #alignment(XYZ_STORAGE_DIR, TEXT_STORAGE_DIR, 'Template4', KB_SIZE_THRESHOLD, RATIO_THRESHOLD)
 
