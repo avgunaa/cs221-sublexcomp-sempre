@@ -3,7 +3,7 @@ from collections import defaultdict
 import ast
 
 TEST_TEXT_STORAGE_DIR = 'testData'
-sourceToDir = {'Template1':'kbTriplesPeople', 'Template4':'xyzTriplesPeople', 'testing':'kbTriplesPeople', 'Combined1and4':'kbCombinedPeople'}
+sourceToDir = {'Template1':'kbTriples', 'Template4':'xyzTriples', 'testing':'kbTriplesPeople', 'Combined1and4':'kbCombined'}
 
 def testAlignment(alignment_dir, test):
 

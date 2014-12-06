@@ -20,6 +20,29 @@ template1 - 9.46
 template4 - 4.49
 Combined - 11.38
 
+All categories
+
+TEST 1:
+template1 - 32.94
+template4 - 
+Combined - 
+
+TEST 2:
+template1 - 14.90
+template4 - 
+Combined - 
+
+TEST 3:
+template1 - 27.51
+template4 - 
+Combined - 
+
+TEST 4:
+template1 - 
+template4 -
+Combined - 
+
+
 Different Testing methods
 TEST1 : If alignment is present then +1 else 0
 TEST2 : If alignment is present then +F1 score else 0
