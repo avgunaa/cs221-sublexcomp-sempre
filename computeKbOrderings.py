@@ -151,5 +151,5 @@ def computeKbOrdering(kbStorageDir, source):
 
 if __name__ == '__main__':
     #splitTrainTestData()
-    computeKbOrdering('kbCombined', 'Combined1and4')
+    computeKbOrdering('kbCombined1and3People', 'Template1234')
 

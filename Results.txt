@@ -24,23 +24,23 @@ All categories
 
 TEST 1:
 template1 - 32.94
-template4 - 
-Combined - 
+template4 - 37.26
+Combined - 42.16
 
 TEST 2:
 template1 - 14.90
-template4 - 
-Combined - 
+template4 - 10.09
+Combined - 20.22
 
 TEST 3:
 template1 - 27.51
-template4 - 
-Combined - 
+template4 - 26.03
+Combined - 29.27
 
 TEST 4:
-template1 - 
-template4 -
-Combined - 
+template1 - 10.73
+template4 - 6.59
+Combined - 14.89
 
 
 Different Testing methods
