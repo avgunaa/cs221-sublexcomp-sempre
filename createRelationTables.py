@@ -3,7 +3,7 @@ import os
 import shutil
 import re
 
-# TODO (Gunaa and Diane): edit your own relative dir paths and 'git push' to easily switch out in the scripts
+# (Gunaa and Diane): edit your own relative dir paths and 'git push' to easily switch out in the scripts
 GINA_DATA_RELATIVE_DIR = '../../Dropbox'
 GUNAA_DATA_RELATIVE_DIR = '..'
 DIANE_DATA_RELATIVE_DIR = '../data'
@@ -161,6 +161,8 @@ def getXYZRelations(kb_dir):
                   #      f.write(entry + '\n')
                   #    intersection = []
                   #    f.close()
+
+                  # restrict number of lines in intersection of two tables
                   if len(intersection) > max(num_lines1 + num_lines2, 100000):
                     break
 
@@ -177,7 +179,6 @@ if __name__ == '__main__':
     freebase_file = os.path.join(GUNAA_DATA_RELATIVE_DIR, 'data/freebase_subset.ttl')
     textdata_file = os.path.join(GUNAA_DATA_RELATIVE_DIR, 'data/linked-arg2-binary-extractions.txt')
     
-    #getFreebaseTriples(freebase_file)
-    #getTextTriples(textdata_file)
-    
+    getFreebaseTriples(freebase_file)
+    getTextTriples(textdata_file)
     getXYZRelations(KB_STORAGE_DIR)
